@@ -1,8 +1,8 @@
 const request = require("supertest");
-const seed = require("../be-nc-news/db/seeds/seed");
-const db = require("../be-nc-news/db");
-const app = require("../be-nc-news/app");
-const data = require("../be-nc-news/db/data/test-data/index");
+const seed = require("../db/seeds/seed");
+const db = require("../db");
+const app = require("../app");
+const data = require("../db/data/test-data/index");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
