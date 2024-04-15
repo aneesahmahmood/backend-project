@@ -1,0 +1,12 @@
+DROP DATABASE IF EXISTS nc_news_test;
+DROP DATABASE IF EXISTS nc_news;
+
+CREATE DATABASE nc_news_test;
+CREATE DATABASE nc_news;
+
+
+-- We'll have two databases in this project: one for real-looking dev data, and another for simpler test data.
+
+-- You will need to create two .env files for your project: .env.test and .env.development. Into each, add PGDATABASE=, with the correct database name for that environment (see /db/setup.sql for the database names). Double check that these .env files are .gitignored.
+
+-- You'll need to run npm install at this point.
