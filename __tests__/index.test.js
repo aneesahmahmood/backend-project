@@ -3,6 +3,7 @@ const seed = require("../db/seeds/seed");
 const db = require("../db");
 const app = require("../app");
 const data = require("../db/data/test-data/index");
+const endpoints = require("../endpoints.json");
 
 beforeEach(() => seed(data));
 afterAll(() => db.end());
@@ -21,8 +22,21 @@ describe("/api/topics", () => {
         });
       });
   });
+});
 
-  test.only("GET 404: Responds with a 404 error if not found", () => {
+describe("/api", () => {
+  test("GET 200: Responds with the contents of the file", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body).toEqual(endpoints);
+      });
+  });
+});
+
+describe("returns an error when the file is not found", () => {
+  test("GET 404: Responds with a 404 error if not found", () => {
     return request(app)
       .get("/api/invalid")
       .expect(404)
