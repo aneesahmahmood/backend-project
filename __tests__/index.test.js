@@ -130,6 +130,17 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 
+  test("GET 200: Results are sorted by comments in a descending order", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments.rows).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+
   test("GET 200: return an empty array if the article has no associated comments", () => {
     return request(app)
       .get("/api/articles/2/comments")
@@ -138,7 +149,7 @@ describe("/api/articles/:article_id/comments", () => {
         expect(comments.rows).toHaveLength(0);
       });
   });
-});
+
 
 test("GET 404: Responds with an error message when the id does not exist on the database", () => {
   return request(app)
