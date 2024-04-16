@@ -77,6 +77,39 @@ test("GET 400: Responds with an error message for invalid article ID format", ()
     });
 });
 
+describe("/api/articles", () => {
+  test("GET 200: Responds with all articles with the additional property of comment_count", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(13);
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(String),
+          });
+        });
+      });
+  });
+
+  test("GET 200: Results are sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles/")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+});
+
 describe("returns an error when the file is not found", () => {
   test("GET 404: Responds with a 404 error if not found", () => {
     return request(app)
