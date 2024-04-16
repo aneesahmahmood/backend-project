@@ -110,6 +110,57 @@ describe("/api/articles", () => {
   });
 });
 
+describe("/api/articles/:article_id/comments", () => {
+  test("GET 200: return all comments for the appropriate article", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        comments.rows.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+      });
+  });
+
+  test("GET 200: return an empty array if the article has no associated comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.rows).toHaveLength(0);
+      });
+  });
+});
+
+test("GET 404: Responds with an error message when the id does not exist on the database", () => {
+  return request(app)
+    .get("/api/articles/9999")
+    .expect(404)
+    .then(({ body }) => {
+      const { msg } = body;
+      expect(msg).toBe("not found");
+    });
+});
+
+test("GET 400: Responds with an error message when the id is invalid", () => {
+  return request(app)
+    .get("/api/articles/invalid_id")
+    .expect(400)
+    .then(({ body }) => {
+      const { msg } = body;
+      expect(msg).toBe("bad request");
+    });
+});
+
+
 describe("returns an error when the file is not found", () => {
   test("GET 404: Responds with a 404 error if not found", () => {
     return request(app)
