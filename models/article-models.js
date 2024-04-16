@@ -32,3 +32,32 @@ exports.selectAllArticles = () => {
       return rows;
     });
 };
+
+exports.selectCommentsByArticleId = (article_id) => {
+  return db.query(
+    `
+ SELECT
+    comment_id,votes, created_at, author, body, article_id
+FROM comments
+WHERE article_id = $1
+ `,
+    [article_id]
+  );
+};
+
+exports.checkArticleExists = (article_id) => {
+  return db
+    .query(
+      `
+  SELECT * FROM articles
+  WHERE article_id = $1`,
+      [article_id]
+    )
+    .then(({ rows: article }) => {
+      if (article.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not found!" });
+      }
+    });
+};
+
+
