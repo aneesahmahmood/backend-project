@@ -3,6 +3,7 @@ const {
   selectAllArticles,
   selectCommentsByArticleId,
   checkArticleExists,
+  addComment,
 } = require("../models/article-models");
 
 exports.getArticleById = (req, res, next) => {
@@ -27,10 +28,23 @@ exports.getCommentsByArticleId = (req, res, next) => {
 
   Promise.all([
     selectCommentsByArticleId(article_id),
-    checkArticleExists(article_id)
+    checkArticleExists(article_id),
   ])
     .then(([comments]) => {
       res.status(200).send({ comments });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
+exports.postComment = (req, res, next) => {
+  const { article_id } = req.params;
+
+  addComment(req.body, article_id)
+    .then((response) => {
+      const comment = response[0];
+      res.status(201).send({ comment: comment });
     })
     .catch((error) => {
       next(error);

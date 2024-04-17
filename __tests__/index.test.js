@@ -65,16 +65,16 @@ describe("/api/articles/:article_id", () => {
         expect(msg).toBe("not found");
       });
   });
-});
 
-test("GET 400: Responds with an error message for invalid article ID format", () => {
-  return request(app)
-    .get("/api/articles/invalid_id")
-    .expect(400)
-    .then(({ body }) => {
-      const { msg } = body;
-      expect(msg).toBe("bad request");
-    });
+  test("GET 400: Responds with an error message for invalid article ID format", () => {
+    return request(app)
+      .get("/api/articles/invalid_id")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
 });
 
 describe("/api/articles", () => {
@@ -108,6 +108,16 @@ describe("/api/articles", () => {
         expect(articles).toBeSortedBy("created_at", { descending: true });
       });
   });
+
+  test("GET 400: Responds with an error message when the id is invalid", () => {
+    return request(app)
+      .get("/api/articles/invalid_id")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {
@@ -139,7 +149,6 @@ describe("/api/articles/:article_id/comments", () => {
         expect(comments.rows).toBeSortedBy("created_at", { descending: true });
       });
   });
-});
 
   test("GET 200: return an empty array if the article has no associated comments", () => {
     return request(app)
@@ -150,27 +159,51 @@ describe("/api/articles/:article_id/comments", () => {
       });
   });
 
+  test("POST 201: Successfully adds a comment for an article", () => {
+    const testComment = {
+      username: "butter_bridge",
+      body: "test comment",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(testComment)
+      .expect(201)
+      .then(({ _body }) => {
+        const { comment } = _body;
+        expect(comment.comment_id).toBe(19);
+        expect(comment.body).toBe("test comment");
+      });
+  });
 
-test("GET 404: Responds with an error message when the id does not exist on the database", () => {
-  return request(app)
-    .get("/api/articles/9999")
-    .expect(404)
-    .then(({ body }) => {
-      const { msg } = body;
-      expect(msg).toBe("not found");
-    });
+  test("POST:400 responds with a status and error message when provided with no username", () => {
+    const testComment = {
+      body: "test comment",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(testComment)
+      .expect(400)
+      .then(({ body }) => {
+        const msg = body;
+        expect(msg).toEqual({ msg: "bad request" });
+      });
+  });
+
+  test("POST:404 responds with a status and error message when provided with a non-existent id", () => {
+    const testComment = {
+      username: "butter_bridge",
+      body: "test comment",
+    };
+    return request(app)
+      .post("/api/articles/9999/comments")
+      .send(testComment)
+      .expect(404)
+      .then(({ body }) => {
+        const msg = body;
+        expect(msg).toEqual({ msg: "not found!" });
+      });
+  });
 });
-
-test("GET 400: Responds with an error message when the id is invalid", () => {
-  return request(app)
-    .get("/api/articles/invalid_id")
-    .expect(400)
-    .then(({ body }) => {
-      const { msg } = body;
-      expect(msg).toBe("bad request");
-    });
-});
-
 
 describe("returns an error when the file is not found", () => {
   test("GET 404: Responds with a 404 error if not found", () => {
