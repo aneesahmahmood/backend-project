@@ -287,3 +287,28 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
+describe("/api/comments/:comment_id", () => {
+  test("DELETE 204: successfully removes the comment", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+
+  test("DELETE 404: comment_id not found", () => {
+    return request(app)
+      .delete("/api/treasures/90837")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Not found!");
+      });
+  });
+
+  test("DELETE 400: Invalid comment_id input", () => {
+    return request(app)
+      .delete("/api/comments/invalid_input")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
+});

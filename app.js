@@ -8,6 +8,7 @@ const {
   postComment,
   patchVotes,
 } = require("./controllers/article-controller");
+const { deleteComment } = require("./controllers/comments-controller");
 const app = express();
 
 app.use(express.json());
@@ -22,10 +23,11 @@ app.get("/api/articles", getAllArticles);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
+app.delete("/api/comments/:comment_id", deleteComment);
 
-app.patch("/api/articles/:article_id", patchVotes)
+app.patch("/api/articles/:article_id", patchVotes);
 app.all("/*", (req, res, next) => {
-  res.status(404).send({ msg: "Not found!" });
+  res.status(404).send({ msg: "API Path not found!" });
 });
 
 app.use((err, req, res, next) => {
