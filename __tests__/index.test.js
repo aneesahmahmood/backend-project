@@ -22,6 +22,42 @@ describe("/api/topics", () => {
         });
       });
   });
+
+  test("GET 200: filters the results by topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(12);
+        articles.forEach((article) => {
+          expect(article.topic).toBe("mitch");
+        });
+      });
+  });
+
+  test("GET 200: filters the results by topic", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles.length).toBe(1);
+        articles.forEach((article) => {
+          expect(article.topic).toBe("cats");
+        });
+      });
+  });
+
+  test("GET 404: responds with an error message when a valid but non existant topic is passed", () => {
+    return request(app)
+      .get("/api/articles?topic=grapes")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("No articles found");
+      });
+  });
 });
 
 describe("/api", () => {

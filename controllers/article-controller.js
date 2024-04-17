@@ -19,9 +19,14 @@ exports.getArticleById = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  selectAllArticles().then((articles) => {
-    res.status(200).send({ articles });
-  });
+  const { topic } = req.query;
+  selectAllArticles(topic)
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch((error) => {
+      next(error);
+    });
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {
@@ -54,11 +59,12 @@ exports.postComment = (req, res, next) => {
 
 exports.patchVotes = (req, res, next) => {
   const { article_id } = req.params;
-  const {inc_votes} = req.body
-  updateVotes(article_id, inc_votes).then((article)=>{
-    res.status(200).send({article})
-  }).catch((error)=>{
-    next(error)
-  })
+  const { inc_votes } = req.body;
+  updateVotes(article_id, inc_votes)
+    .then((article) => {
+      res.status(200).send({ article });
+    })
+    .catch((error) => {
+      next(error);
+    });
 };
-
