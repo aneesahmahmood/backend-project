@@ -16,34 +16,42 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectAllArticles = () => {
-  return db
-    .query(
-      `
-  SELECT articles.author, articles.title, articles.topic, articles.created_at, articles.votes, articles.article_img_url, 
-  COUNT(comments.comment_id) AS comment_count
-  FROM articles
-  LEFT JOIN comments ON comments.article_id = articles.article_id
-  GROUP BY articles.article_id 
-  ORDER BY articles.created_at DESC
-  `
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
-};
+exports.selectAllArticles = (topic) => {
+  let queries = [];
 
-exports.selectCommentsByArticleId = (article_id) => {
-  return db.query(
-    `
- SELECT
-    comment_id,votes, created_at, author, body, article_id
-FROM comments
-WHERE article_id = $1
-ORDER BY created_at DESC 
- `,
-    [article_id]
-  );
+  let sqlQuery = `
+    SELECT 
+      articles.author, 
+      articles.title, 
+      articles.topic, 
+      articles.created_at, 
+      articles.votes, 
+      articles.article_img_url, 
+      COUNT(comments.comment_id) AS comment_count
+    FROM 
+      articles
+    LEFT JOIN 
+      comments ON comments.article_id = articles.article_id
+  `;
+
+  if (topic) {
+    sqlQuery += ` WHERE topic = $1`;
+    queries.push(topic);
+  }
+
+  sqlQuery += `
+    GROUP BY 
+      articles.article_id 
+    ORDER BY 
+      articles.created_at DESC
+  `;
+
+  return db.query(sqlQuery, queries).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "No articles found" });
+    }
+    return rows;
+  });
 };
 
 exports.checkArticleExists = (article_id) => {
@@ -90,4 +98,17 @@ exports.updateVotes = (article_id, inc_votes) => {
       }
       return rows[0];
     });
+};
+
+exports.selectCommentsByArticleId = (article_id) => {
+  return db.query(
+    `
+ SELECT
+    comment_id,votes, created_at, author, body, article_id
+FROM comments
+WHERE article_id = $1
+ORDER BY created_at DESC 
+ `,
+    [article_id]
+  );
 };
