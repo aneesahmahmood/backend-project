@@ -216,3 +216,92 @@ describe("returns an error when the file is not found", () => {
       });
   });
 });
+
+describe("/api/articles/:article_id", () => {
+  test("PATCH 200: Successfully increments the votes", () => {
+    const testPatch = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(testPatch)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 101,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+
+  test("PATCH 200: Successfully decrements the votes", () => {
+    const testPatch = { inc_votes: -10 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(testPatch)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 90,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+
+  test("PATCH 400: Invalid article_id input", () => {
+    const testPatch = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/invalid_input")
+      .send(testPatch)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
+
+  test("PATCH 404: article_id not found", () => {
+    const testPatch = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/treasures/764837")
+      .send(testPatch)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Not found!");
+      });
+  });
+});
+
+// CORE: PATCH /api/articles/:article_id
+// Description
+// Should:
+
+// be available on /api/articles/:article_id.
+// update an article by article_id.
+// Request body accepts:
+
+// an object in the form { inc_votes: newVote }.
+// newVote will indicate how much the votes property in the database should be updated by, e.g.
+// { inc_votes : 1 } would increment the current article's vote property by 1
+// { inc_votes : -100 } would decrement the current article's vote property by 100
+// Responds with:
+
+// the updated article
+// Consider what errors could occur with this endpoint, and make sure to test for them.
+
+// Remember to add a description of this endpoint to your /api endpoint.
