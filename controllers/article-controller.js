@@ -4,6 +4,7 @@ const {
   selectCommentsByArticleId,
   checkArticleExists,
   addComment,
+  updateVotes,
 } = require("../models/article-models");
 
 exports.getArticleById = (req, res, next) => {
@@ -50,3 +51,14 @@ exports.postComment = (req, res, next) => {
       next(error);
     });
 };
+
+exports.patchVotes = (req, res, next) => {
+  const { article_id } = req.params;
+  const {inc_votes} = req.body
+  updateVotes(article_id, inc_votes).then((article)=>{
+    res.status(200).send({article})
+  }).catch((error)=>{
+    next(error)
+  })
+};
+

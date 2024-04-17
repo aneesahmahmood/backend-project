@@ -6,6 +6,7 @@ const {
   getAllArticles,
   getCommentsByArticleId,
   postComment,
+  patchVotes,
 } = require("./controllers/article-controller");
 const app = express();
 
@@ -22,6 +23,7 @@ app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
 
+app.patch("/api/articles/:article_id", patchVotes)
 app.all("/*", (req, res, next) => {
   res.status(404).send({ msg: "Not found!" });
 });
