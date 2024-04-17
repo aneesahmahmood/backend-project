@@ -111,6 +111,47 @@ describe("/api/articles/:article_id", () => {
         expect(msg).toBe("bad request");
       });
   });
+
+  test("GET 200: should also respond with a comment_count for the article", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body;
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 100,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: 11,
+        });
+      });
+  });
+
+  test("GET 404: Responds with an error message when the id does not exist on the database", () => {
+    return request(app)
+      .get("/api/articles/15426")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("not found");
+      });
+  });
+
+  test("GET 400: Responds with an error message for invalid article ID format", () => {
+    return request(app)
+      .get("/api/articles/invalid_id")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("bad request");
+      });
+  });
 });
 
 describe("/api/articles", () => {
@@ -262,6 +303,7 @@ describe("/api/articles/:article_id", () => {
       .expect(200)
       .then(({ body }) => {
         const { article } = body;
+
         expect(article).toMatchObject({
           article_id: 1,
           title: "Living in the shadow of a great man",
