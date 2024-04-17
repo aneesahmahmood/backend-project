@@ -287,21 +287,3 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
-// CORE: PATCH /api/articles/:article_id
-// Description
-// Should:
-
-// be available on /api/articles/:article_id.
-// update an article by article_id.
-// Request body accepts:
-
-// an object in the form { inc_votes: newVote }.
-// newVote will indicate how much the votes property in the database should be updated by, e.g.
-// { inc_votes : 1 } would increment the current article's vote property by 1
-// { inc_votes : -100 } would decrement the current article's vote property by 100
-// Responds with:
-
-// the updated article
-// Consider what errors could occur with this endpoint, and make sure to test for them.
-
-// Remember to add a description of this endpoint to your /api endpoint.
