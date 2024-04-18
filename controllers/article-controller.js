@@ -21,6 +21,7 @@ exports.getArticleById = (req, res, next) => {
 exports.getAllArticles = (req, res, next) => {
   const { topic } = req.query;
   selectAllArticles(topic)
+ 
     .then((articles) => {
       res.status(200).send({ articles });
     })
@@ -36,7 +37,8 @@ exports.getCommentsByArticleId = (req, res, next) => {
     selectCommentsByArticleId(article_id),
     checkArticleExists(article_id),
   ])
-    .then(([comments]) => {
+    .then((response) => {
+      const comments = response[0].rows;
       res.status(200).send({ comments });
     })
     .catch((error) => {

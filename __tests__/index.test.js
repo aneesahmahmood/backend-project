@@ -23,7 +23,7 @@ describe("/api/topics", () => {
       });
   });
 
-  test("GET 200: filters the results by topic", () => {
+  test.only("GET 200: filters the results by topic", () => {
     return request(app)
       .get("/api/articles?topic=mitch")
       .expect(200)
@@ -202,9 +202,9 @@ describe("/api/articles/:article_id/comments", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
-      .then(({ body }) => {
+      .then(({body} ) => {
         const { comments } = body;
-        comments.rows.forEach((comment) => {
+        comments.forEach((comment) => {
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
             author: expect.any(String),
@@ -223,7 +223,7 @@ describe("/api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body }) => {
         const { comments } = body;
-        expect(comments.rows).toBeSortedBy("created_at", { descending: true });
+        expect(comments).toBeSortedBy("created_at", { descending: true });
       });
   });
 
@@ -232,7 +232,7 @@ describe("/api/articles/:article_id/comments", () => {
       .get("/api/articles/2/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
-        expect(comments.rows).toHaveLength(0);
+        expect(comments).toHaveLength(0);
       });
   });
 
