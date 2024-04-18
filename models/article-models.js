@@ -1,4 +1,4 @@
-const db = require("../db/index");
+const db = require("../db/connection");
 
 exports.selectArticleById = (article_id) => {
   return db

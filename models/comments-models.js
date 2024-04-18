@@ -1,4 +1,4 @@
-const db = require("../db/index");
+const db = require("../db/connection");
 
 exports.removeComment = (comment_id) => {
   return db
