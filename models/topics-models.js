@@ -1,6 +1,6 @@
 
 const db = require("../db/connection");
 
-exports.selectAllTreasures = () => {
+exports.selectAllTopics = () => {
   return db.query(`SELECT * FROM topics`);
 };

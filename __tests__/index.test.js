@@ -355,7 +355,7 @@ describe("/api/articles/:article_id", () => {
   test("PATCH 404: article_id not found", () => {
     const testPatch = { inc_votes: 1 };
     return request(app)
-      .patch("/api/treasures/764837")
+      .patch("/api/topic/764837")
       .send(testPatch)
       .expect(404)
       .then(({ body }) => {
@@ -372,7 +372,7 @@ describe("/api/comments/:comment_id", () => {
 
   test("DELETE 404: comment_id not found", () => {
     return request(app)
-      .delete("/api/treasures/90837")
+      .delete("/api/topic/90837")
       .expect(404)
       .then(({ body }) => {
         const { msg } = body;
@@ -398,8 +398,8 @@ describe("/api/users", () => {
       .expect(200)
       .then(({ body }) => {
         const { users } = body;
-        expect(users.rows.length).toBe(4);
-        users.rows.forEach((user) => {
+        expect(users.length).toBe(4);
+        users.forEach((user) => {
           expect(typeof user.username).toBe("string");
           expect(typeof user.name).toBe("string");
           expect(typeof user.avatar_url).toBe("string");
