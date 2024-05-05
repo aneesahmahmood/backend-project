@@ -1,6 +1,6 @@
 # Northcoders News API
 
-Northcoders News API enables the accessing of data programatically. It is mimicing a real world backend service to provide information to the front end architecture. You can find the hosted version here (insert link when complete)
+Northcoders News API enables the accessing of data programatically. It is mimicing a real world backend service to provide information to the front end architecture. You can find the hosted version here https://nc-news-backend-project-u3fr.onrender.com/
 
 ## Getting Started
 
@@ -27,3 +27,7 @@ Northcoders News API enables the accessing of data programatically. It is mimici
 
 - Node.js: v20.0.0 or higher
 - PostgreSQL: v16.1.0 or higher
+
+
+
+

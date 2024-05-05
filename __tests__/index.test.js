@@ -23,7 +23,7 @@ describe("/api/topics", () => {
       });
   });
 
-  test.only("GET 200: filters the results by topic", () => {
+  test("GET 200: filters the results by topic", () => {
     return request(app)
       .get("/api/articles?topic=mitch")
       .expect(200)
@@ -170,7 +170,7 @@ describe("/api/articles", () => {
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
-            comment_count: expect.any(String),
+            comment_count: expect.any(Number),
           });
         });
       });
@@ -195,6 +195,56 @@ describe("/api/articles", () => {
         expect(msg).toBe("bad request");
       });
   });
+
+  test("GET 200: default sorts by created_at in descending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=created_at")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("GET 200: sorts articles as per client query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("comment_count", { descending: true });
+      });
+  });
+
+  test("GET 200: Allow client to change sort order", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeSortedBy("created_at", { descending: false });
+      });
+  });
+
+  test("GET 400: Invalid sort_by request received", () => {
+    return request(app)
+      .get("/api/articles?sort_by=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid request received");
+      });
+  });
+
+  test("GET 400: Invalid order request received", () => {
+    return request(app)
+      .get("/api/articles?order=invalid")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Invalid request received");
+      });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {
@@ -202,7 +252,7 @@ describe("/api/articles/:article_id/comments", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
-      .then(({body} ) => {
+      .then(({ body }) => {
         const { comments } = body;
         comments.forEach((comment) => {
           expect(comment).toMatchObject({
@@ -403,6 +453,23 @@ describe("/api/users", () => {
           expect(typeof user.username).toBe("string");
           expect(typeof user.name).toBe("string");
           expect(typeof user.avatar_url).toBe("string");
+        });
+      });
+  });
+});
+
+describe("/api/users/:username", () => {
+  test("GET 200: returns a user by their username", () => {
+    return request(app)
+      .get("/api/users/butter_bridge")
+      .expect(200)
+      .then(({ body }) => {
+        const { user } = body;
+        expect(user).toMatchObject({
+          username: "butter_bridge",
+          avatar_url:
+            "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+          name: "jonny",
         });
       });
   });

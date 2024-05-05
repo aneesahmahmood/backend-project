@@ -23,10 +23,24 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectAllArticles = (topic) => {
+exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc") => {
   let queries = [];
+  const validQueries = [
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "article_img_url",
+    "comment_count",
+  ];
 
-  let sqlQuery = `
+  const validOrders = ["asc", "desc"];
+
+  if (!validQueries.includes(sort_by) || !validOrders.includes(order)) {
+    return Promise.reject({ status: 400, msg: "Invalid request received" });
+  } else {
+    let sqlQuery = `
     SELECT 
       articles.author, 
       articles.title, 
@@ -34,31 +48,33 @@ exports.selectAllArticles = (topic) => {
       articles.created_at, 
       articles.votes, 
       articles.article_img_url, 
-      COUNT(comments.comment_id) AS comment_count
+      CAST(COUNT(comments.comment_id) AS INT) as comment_count
     FROM 
       articles
     LEFT JOIN 
       comments ON comments.article_id = articles.article_id
   `;
 
-  if (topic) {
-    sqlQuery += ` WHERE topic = $1`;
-    queries.push(topic);
-  }
+    if (topic) {
+      sqlQuery += ` WHERE topic = $1`;
+      queries.push(topic);
+    }
 
-  sqlQuery += `
+    sqlQuery += `
     GROUP BY 
       articles.article_id 
     ORDER BY 
-      articles.created_at DESC
+      ${sort_by} ${order};
   `;
 
-  return db.query(sqlQuery, queries).then(({ rows }) => {
-    if (rows.length === 0) {
-      return Promise.reject({ status: 404, msg: "No articles found" });
-    }
-    return rows;
-  });
+  
+    return db.query(sqlQuery, queries).then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "No articles found" });
+      }
+      return rows;
+    });
+  }
 };
 
 exports.checkArticleExists = (article_id) => {

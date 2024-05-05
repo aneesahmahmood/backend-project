@@ -14,9 +14,10 @@ const {
   getAllUsers,
   getUserByUsername,
 } = require("./controllers/user-controller");
-app.use(cors());
+
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/api/topics", getAllTopics);
