@@ -42,6 +42,7 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc") => {
   } else {
     let sqlQuery = `
     SELECT 
+      articles.article_id,
       articles.author, 
       articles.title, 
       articles.topic, 
@@ -67,7 +68,6 @@ exports.selectAllArticles = (topic, sort_by = "created_at", order = "desc") => {
       ${sort_by} ${order};
   `;
 
-  
     return db.query(sqlQuery, queries).then(({ rows }) => {
       if (rows.length === 0) {
         return Promise.reject({ status: 404, msg: "No articles found" });
